@@ -23,7 +23,7 @@ jobs:
         with:
           path: ${{ github.repository }}
           repository: ${{ github.repository }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.TEST_SECRET }}
       - name: Find merged PR
         uses: jwalton/gh-find-current-pr@v1
         id: findPr
@@ -46,7 +46,7 @@ jobs:
         with:
           path: Mixaster995/${{ matrix.repository }}
           repository: Mixaster995/${{ matrix.repository }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.TEST_SECRET }}
       - uses: actions/setup-go@v1
         with:
           go-version: 1.16
