@@ -58,8 +58,6 @@ jobs:
           git diff
       - name: Push update to the ${{ matrix.repository }}
         working-directory: Mixaster995/${{ matrix.repository }}
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo Starting to update repository ${{ matrix.repository }}
           git config --global user.email "avramenkomihail15@gmail.com"
