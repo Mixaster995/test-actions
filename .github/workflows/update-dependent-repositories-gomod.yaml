@@ -35,7 +35,7 @@ jobs:
           echo "Update go.mod and go.sum to latest version from ${{ github.repository }}@main" >> /tmp/commit-message
           echo "PR link: https://github.com/${{ github.repository }}/pull/${{ steps.findPr.outputs.pr }}" >> /tmp/commit-message
           echo "" >> /tmp/commit-message
-          git log --date=iso --pretty='format:- Commit: %h%nAuthor: %an%nDate: %ad%nMessage:%B' -1 | sed '$d' >> /tmp/commit-message
+          git log --date=iso --pretty='format:- Commit: %h%nAuthor: %an%nDate: %ad%nMessage:%B' -1 | sed '/^$/d;$d' >> /tmp/commit-message
           echo "Commit Message:"
           cat /tmp/commit-message
 
