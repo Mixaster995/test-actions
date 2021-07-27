@@ -1,4 +1,4 @@
-module test-actions
+module github.com/Mixaster995/test-actions
 
 go 1.16
 
