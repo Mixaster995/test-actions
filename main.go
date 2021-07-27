@@ -1,4 +1,4 @@
-package testactions
+package test_actions
 
 import (
 	"fmt"
