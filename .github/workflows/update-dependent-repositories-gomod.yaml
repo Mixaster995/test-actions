@@ -61,7 +61,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo Starting to update repositotry ${{ matrix.repository }}
+          echo Starting to update repository ${{ matrix.repository }}
           git config --global user.email "avramenkomihail15@gmail.com"
           git config --global user.name "Mikhail Avramenko"
           git add go.mod go.sum
