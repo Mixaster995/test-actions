@@ -8,4 +8,5 @@ import (
 func Asdf() {
 	_, _ = yaml.Marshal("asdf")
 	fmt.Printf("hello go")
+	fmt.Printf("hello go")
 }
