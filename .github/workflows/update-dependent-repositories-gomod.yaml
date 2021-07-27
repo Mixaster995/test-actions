@@ -1,25 +1,68 @@
 ---
-name: Pull Request on update/* Branch Push
+name: Update dependent repositories
 on:
   push:
     branches:
-      - update/**
+      - master
+  workflow_run:
+    types:
+      - completed
+    workflows:
+      - 'automerge'
 jobs:
-  auto-pull-request:
-    name: Pull Request on update/* Branch Push
+  update-dependent-repositories:
+    strategy:
+      matrix:
+        repository: [test-actions-2]
+    name: Update ${{ matrix.repository }}
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.actor == 'Mixaster995' || github.event_name == 'push' }}
     steps:
-      - uses: actions/checkout@v2
-      - name: Construct PR message
+      - name: Checkout ${{ github.repository }}
+        uses: actions/checkout@v2
+        with:
+          path: ${{ github.repository }}
+          repository: ${{ github.repository }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Find merged PR
+        uses: jwalton/gh-find-current-pr@v1
+        id: findPr
+        with:
+          github-token: ${{ github.token }}
+      - name: Create commit message
+        working-directory: ${{ github.repository }}
         run: |
-          PULL_REQUEST_BODY=$(git log -1)
-          echo "${PULL_REQUEST_BODY}"
-          echo "PULL_REQUEST_BODY<<EOF" >> $GITHUB_ENV
-          echo "${PULL_REQUEST_BODY}" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-      - name: pull-request-action
-        uses: vsoch/pull-request-action@1.0.12
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH_PREFIX: "update/"
-          PULL_REQUEST_BRANCH: "master"
+          echo "Update go.mod and go.sum to latest version from ${{ github.repository }}@master ${{ github.repository }}#${{ steps.findPr.outputs.pr }}" >> /tmp/commit-message
+          echo "" >> /tmp/commit-message
+          echo "${{ github.repository }} PR link: https://github.com/${{ github.repository }}/pull/${{ steps.findPr.outputs.pr }}" >> /tmp/commit-message
+          echo "" >> /tmp/commit-message
+          echo "${{ github.repository }} commit message:" >> /tmp/commit-message
+          git log -1 >> /tmp/commit-message
+          echo "Commit Message:"
+          cat /tmp/commit-message
+
+      - name: Checkout Mixaster995/${{ matrix.repository }}
+        uses: actions/checkout@v2
+        with:
+          path: Mixaster995/${{ matrix.repository }}
+          repository: Mixaster995/${{ matrix.repository }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-go@v1
+        with:
+          go-version: 1.16
+      - name: Update ${{ github.repository }} locally
+        working-directory: Mixaster995/${{ matrix.repository }}
+        run: |
+          GOPRIVATE=github.com/Mixaster995 go get -u github.com/${{ github.repository }}@master
+          go mod tidy
+          git diff
+      - name: Push update to the ${{ matrix.repository }}
+        working-directory: Mixaster995/${{ matrix.repository }}
+        run: |
+          echo Starting to update repositotry ${{ matrix.repository }}
+          git config --global user.email "avramenkomihail15@gmail.com"
+          git config --global user.name "Mikhail Avramenko"
+          git add go.mod go.sum
+          git commit -s -F /tmp/commit-message
+          git checkout -b update/${{ github.repository }}
+          git push -f origin update/${{ github.repository }}
