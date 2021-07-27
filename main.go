@@ -5,7 +5,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-func main() {
+func asdf() {
 	_, _ = yaml.Marshal("asdf")
 	fmt.Printf("hello go")
 }
