@@ -27,7 +27,7 @@ jobs:
       - name: Get sha
         id: get-sha
         run: |
-          echo ::set-output name=sha::$( curl -u "u:${{secrets.TEST_SECRET}}" https://api.github.com/repos/Mixaster995/test-actions-1/git/ref/heads/master | jq .object.sha | tr -d '"' )
+          echo ::set-output name=sha::$( curl -u "u:${{secrets.TEST_SECRET}}" https://api.github.com/repos/Mixaster995/test-actions/git/ref/heads/master | jq .object.sha | tr -d '"' )
       - name: Find merged PR
         uses: jwalton/gh-find-current-pr@v1.0.2
         id: findPr
